@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AFOFA SERVER - Daftar File di FTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 150px;
+            height: 60vh;
+            background-color: #eff2f3e9;
+            background-image: url("https://img.freepik.com/premium-vector/modern-isometric-design-cloud-server-management-man-working-data-center-room-managing-data-cloud-server-vector-illustration_142963-86.jpg?w=740");
+        }
+
+        .container {
+            width: 800px;
+            padding: 20px;
+            background-color: #0cacf1e9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #fafdfee6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f7fbfce9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #eb0808;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btnRename {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1202a7e1;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btnRename:hover {
+            background-color: #000e5ef7;
+        }
+
+        .btn1 {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #09dd37f8;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c9260a;
+        }
+
+        .btn1:hover {
+            background-color: #34d105be;
+        }
+
+        .buttonRename2 {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1202a7e1;
+            color: white;
+            text-decoration: none;
+            border: none;
+            margin-top: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .buttonCancel2 {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #eb0808;
+            color: white;
+            text-decoration: none;
+            border: none;
+            margin-top: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .buttonCancel2:hover {
+            background-color: #c9260a;
+        }
+
+        .buttonRename2:hover {
+            background-color: #000e5ef7;
+        }
+
+        .Inputan[type="text"] {
+            display: inline-block;
+            background-color: #04b0fa;
+            color: white;
+            padding: 8px 47px;
+            cursor: pointer;
+            border: 4px;
+            margin-right: 2px;
+            border-radius: 4px;
+            border: none;
+            box-sizing: border-box;
+            border: 1px solid white;
+            text-align: left;
+        }
+
+        .Inputan[type="text"]:focus {
+            outline: none;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Daftar File di FTP</h1>
+        <table>
+            <tr>
+                <th>Nama File</th>
+                <th>Delete File</th>
+                <th>Rename File</th>
+            </tr>
+            {% for file_name in file_list %}
+            <tr>
+                <!-- memberikan id unik pada setiap elemen td dalam tabel -->
+                <td id="file-{{ loop.index }}">{{ file_name }}</td>
+                <td>
+                    <form method="POST" action="/delete-file">
+                        <input type="hidden" name="file_name" value="{{ file_name }}">
+                        <input type="submit" class="btn" value="Delete">
+                    </form>
+                </td>
+                <td>
+                    <button class="btnRename" onclick="editFileName('{{ loop.index }}')">Rename</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <form id="rename-form" method="POST" action="/rename-file" style="display: none;">
+            <input type="hidden" name="old_file_name" id="old-file-name">
+            <input class="Inputan" type="text" name="new_file_name" id="new-file-name" placeholder="Nama file baru"
+                autofocus>
+            <button class="buttonRename2" onclick="confirmRename()">Rename</button>
+            <button class="buttonCancel2" onclick="cancelRename()">Cancel</button>
+        </form>
+
+        <br>
+        <a href="/" class="btn1">Kembali ke Halaman Utama</a>
+    </div>
+    <script>
+        window.onload = function () {
+            var newFileNameInput = document.getElementById('new-file-name');
+            newFileNameInput.focus();
+            newFileNameInput.setSelectionRange(0, 0);
+        }
+        function editFileName(index) {
+            var fileCell = document.getElementById('file-' + index);
+            var fileName = fileCell.innerText;
+            var renameForm = document.getElementById('rename-form');
+            var oldFileNameInput = document.getElementById('old-file-name');
+            var newFileNameInput = document.getElementById('new-file-name');
+
+            fileCell.innerHTML = `<input type="text" value="${fileName}" autofocus>`;
+            renameForm.style.display = 'block';
+            oldFileNameInput.value = fileName;
+            newFileNameInput.focus();
+            newFileNameInput.setSelectionRange(0, 0);
+        }
+
+        function cancelRename() {
+            var fileCell = document.getElementById('file-' + index);
+            var fileNameInput = fileCell.getElementsByTagName('input')[0];
+            var renameForm = document.getElementById('rename-form');
+            var oldFileNameInput = document.getElementById('old-file-name');
+            var newFileNameInput = document.getElementById('new-file-name');
+
+            fileCell.innerHTML = fileNameInput.value;
+            renameForm.style.display = 'none';
+            oldFileNameInput.value = '';
+            newFileNameInput.value = '';
+        }
+
+        function confirmRename() {
+            var newFileName = document.getElementById('new-file-name').value;
+            if (newFileName !== '') {
+                var confirmed = confirm("Apakah Anda yakin ingin mengganti nama file ini?");
+                if (confirmed) {
+                    document.getElementById('rename-form').submit();
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
